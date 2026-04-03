@@ -33,9 +33,10 @@ class FoxHireClient:
         if not self.token:
             await self._login()
 
-        # Ensure trailing slash so the SPA catch-all doesn't intercept GET routes
+        # Routes defined as "/" on a prefixed router (e.g. GET/POST /api/jobs) need
+        # trailing slash. Routes with specific paths (e.g. /api/ai/parse-job) reject it.
         url = f"{self.base_url}{path}"
-        if not url.endswith("/"):
+        if not url.endswith("/") and "/ai/" not in path:
             url += "/"
 
         resp = await self.client.request(
